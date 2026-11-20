@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About the project — SmartParking</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2315a34a'/%3E%3Ctext x='32' y='45' font-family='Segoe UI,Arial' font-size='36' font-weight='bold' fill='white' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body data-page="about">
+
+<header class="site-header">
+    <div class="container header-inner">
+        <a class="brand" href="/">
+            <span class="brand-mark">P</span>
+            <span class="brand-text">Smart<span>Parking</span></span>
+        </a>
+        <nav class="nav" id="site-nav">
+            <a href="/" data-nav="home">Home</a>
+            <a href="/find.html" data-nav="find">Find Parking</a>
+            <a href="/about.html" data-nav="about">About</a>
+            <a href="/dashboard.html" data-nav="dashboard">Dashboard</a>
+        </nav>
+        <div class="header-actions">
+            <div class="row" data-auth-area></div>
+            <button class="btn btn-secondary btn-sm menu-toggle" id="menu-toggle" type="button">Menu</button>
+        </div>
+    </div>
+</header>
+
+<section class="page-hero">
+    <div class="container">
+        <div class="crumbs"><a href="/">Home</a> / About</div>
+        <h1>How SmartParking works</h1>
+        <p>An academic Data Structures &amp; Algorithms project: the website is the demo, the C++ backend is the subject.</p>
+    </div>
+</section>
+
+<main class="container" style="padding:34px 0 70px">
+    <div class="panel panel-pad">
+        <div class="prose">
+            <h2 style="margin-top:0">Project overview</h2>
+            <p>
+                SmartParking is a smart parking management system. Users search for parking near a location,
+                compare prices and free slots, then reserve a specific slot. Availability changes the moment
+                a booking is made or cancelled.
+            </p>
+            <p>
+                The important part is where the logic runs: <strong>all search, filtering, sorting, shortest-path
+                and availability work is implemented in C++</strong> using data structures written by hand.
+                The browser only sends HTTP requests and paints the JSON it gets back. No parking algorithm
+                runs in JavaScript, and no SQL is used for sorting or shortest paths.
+            </p>
+
+            <h2 id="dsa">DSA concepts and where they are used</h2>
+            <div class="table-wrap">
+                <table class="table dsa-table">
+                    <thead><tr><th>Concept</th><th>Where in the code</th><th>Complexity</th></tr></thead>
+                    <tbody>
+                        <tr><td>Graph (adjacency list)</td><td><code>backend/graph.cpp</code> — roads, landmarks and parking entrances</td><td>O(V + E) space</td></tr>
+                        <tr><td>Dijkstra + priority queue</td><td><code>Graph::dijkstra()</code> — nearest parking by road distance</td><td>O((V + E) log V)</td></tr>
+                        <tr><td>Hash table (separate chaining)</td><td><code>backend/hash_table.h</code> — parking id and name lookup</td><td>O(1) average</td></tr>
+                        <tr><td>Merge sort</td><td><code>sorting.h</code> — nearest, most available, A–Z ordering</td><td>O(n log n)</td></tr>
+                        <tr><td>Quick sort</td><td><code>sorting.h</code> — cheapest first, sort of fares</td><td>O(n log n) average</td></tr>
+                        <tr><td>Binary search / lower bound</td><td><code>ParkingManager::search()</code> — exact and prefix name search</td><td>O(log n)</td></tr>
+                        <tr><td>Linked list</td><td><code>SlotList</code> (all slots of a lot), <code>BookingManager</code> (active bookings)</td><td>O(1) append, O(n) scan</td></tr>
+                        <tr><td>Queue (FIFO)</td><td><code>WaitingQueue</code> — waiting list of a full lot</td><td>O(1) enqueue / dequeue</td></tr>
+                        <tr><td>Structures / classes</td><td><code>ParkingLocation</code>, <code>Slot</code>, <code>Booking</code>, <code>WaitEntry</code></td><td>—</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 id="algorithms">How each algorithm works</h2>
+            <h3>Dijkstra's shortest path</h3>
+            <p>
+                Every landmark, junction and parking entrance is a vertex. Roads are two-way edges with a
+                weight in kilometres. Starting from the user's nearest vertex, the algorithm keeps a distance
+                array, pushes the source into a min-heap and repeatedly settles the closest unvisited vertex,
+                relaxing its neighbours. Manual binary-heap <code>siftUp</code> / <code>siftDown</code> code is
+                in <code>graph.h</code>; the road path is rebuilt from the <code>parent</code> array
+                filled by <code>dijkstra()</code>.
+            </p>
+            <h3>Merge sort</h3>
+            <p>
+                Recursively splits the result array in half, sorts each half, then merges them with a buffer.
+                Stable, so lots with the same distance keep a sensible order.
+            </p>
+            <h3>Quick sort</h3>
+            <p>
+                Partition around a median-of-three pivot and recurse on both sides. Used for price ordering
+                because it sorts in place.
+            </p>
+            <h3>Hash table</h3>
+            <p>
+                <code>HashTable&lt;Key, Value, Hasher&gt;</code> hashes the key, takes it modulo the bucket count,
+                and stores the entry at the head of that bucket's chain. It rehashes when the load factor passes
+                0.75, which keeps lookup at O(1) on average.
+            </p>
+            <h3>Binary search and prefix search</h3>
+            <p>
+                Lot names are lowercased and kept in sorted order. An exact match is found with binary search;
+                a prefix is found with a lower-bound search followed by a forward scan; area and address use a
+                substring scan as a fallback.
+            </p>
+            <h3>Waiting list queue</h3>
+            <p>
+                A full lot keeps a FIFO queue with front and back pointers. When a booking is cancelled, the
+                slot is freed and the first waiter is dequeued and automatically booked into it.
+            </p>
+
+            <h2>Project architecture</h2>
+<pre class="code">Browser (HTML · CSS · vanilla JS)
+        │  fetch() JSON over HTTP
+        ▼
+C++ HTTP server  (backend/http.cpp — sockets, no framework)
+        │
+        ├── Router (backend/main.cpp)  →  /api/locations, /api/bookings, /api/stats …
+        │
+        ├── ParkingManager (parking.cpp)
+        │     ├── Graph + Dijkstra ............ graph.cpp
+        │     ├── Hash table (id / name) ...... hash_table.h
+        │     ├── Slot linked lists ........... SlotList
+        │     ├── Waiting queues .............. WaitingQueue
+        │     └── Merge sort / quick sort ..... sorting.h
+        │
+        ├── BookingManager (booking.cpp) — linked list of bookings + queue promotion
+        │
+        └── Database (database.cpp) — SQLite: locations, slots, bookings, waiting list
+</pre>
+
+            <h2>REST API</h2>
+            <div class="table-wrap">
+                <table class="table">
+                    <thead><tr><th>Endpoint</th><th>What it does</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>GET /api/health</code></td><td>Service status, graph size, algorithm list</td></tr>
+                        <tr><td><code>GET /api/locations</code></td><td>Search + filter + sort (q, place, sort, maxPrice, maxDistance, minAvailable, type, lat, lng)</td></tr>
+                        <tr><td><code>GET /api/locations/:id</code></td><td>Full details, slots and waiting list</td></tr>
+                        <tr><td><code>GET /api/locations/:id/route</code></td><td>Dijkstra path from an origin to the lot</td></tr>
+                        <tr><td><code>GET /api/locations/:id/slots</code></td><td>All slots with occupied flags</td></tr>
+                        <tr><td><code>POST /api/bookings</code></td><td>Book a slot, update availability, price the stay</td></tr>
+                        <tr><td><code>POST /api/bookings/:id/cancel</code></td><td>Free the slot and promote the first waiter</td></tr>
+                        <tr><td><code>POST /api/waitlist</code></td><td>Join the FIFO waiting list of a full lot</td></tr>
+                        <tr><td><code>GET /api/stats</code></td><td>Dashboard aggregates, busiest lots, bookings</td></tr>
+                        <tr><td><code>GET /api/compare?ids=1,2&amp;hours=3</code></td><td>Tiered fare comparison, cheapest first</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 id="run">Run it locally</h2>
+<pre class="code">cd SmartParking
+g++ -std=c++17 -O2 -Ibackend/third_party backend/*.cpp backend/third_party/sqlite3.c -o smartparking
+./smartparking --port 8080
+# open http://localhost:8080</pre>
+            <p>
+                On Windows 11 with MinGW, double-click <code>build.bat</code> and run
+                <code>smartparking.exe --port 8080</code>. The SQLite library is vendored in
+                <code>backend/third_party</code>, so there is nothing else to install apart from the compiler.
+                Full step-by-step instructions are in <code>README.md</code>.
+            </p>
+
+            <h2>Benefits of this design</h2>
+            <ul>
+                <li><strong>One source of truth:</strong> availability is stored per slot in SQLite, so a restart never leaves the numbers wrong.</li>
+                <li><strong>Fair waiting lists:</strong> a queue guarantees first-come, first-served promotion instead of a race between users.</li>
+                <li><strong>Honest distance:</strong> road-graph distances beat straight-line distance when comparing parking lots.</li>
+                <li><strong>Separation of concerns:</strong> the browser cannot compute or fake a distance or a price — the C++ backend decides.</li>
+            </ul>
+        </div>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div>
+                <a class="brand" href="/"><span class="brand-mark">P</span><span class="brand-text">Smart<span>Parking</span></span></a>
+                <p>A smart parking management system built as a Data Structures &amp; Algorithms project.</p>
+            </div>
+            <div>
+                <h4>Product</h4>
+                <a href="/find.html">Find parking</a><br>
+                <a href="/dashboard.html">Dashboard</a><br>
+                <a href="/booking.html">My bookings</a>
+            </div>
+            <div>
+                <h4>Project</h4>
+                <a href="/about.html">How it works</a><br>
+                <a href="/about.html#dsa">DSA concepts</a><br>
+                <a href="/about.html#run">Run locally</a>
+            </div>
+            <div>
+                <h4>Built with</h4>
+                <p style="max-width:22ch">C++17 · SQLite · HTML5 · CSS3 · vanilla JavaScript</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© <span data-year></span> SmartParking — academic DSA project</span>
+            <span>Graphs · Dijkstra · Hash tables · Sorting · Searching · Linked lists · Queues</span>
+        </div>
+    </div>
+</footer>
+
+<script src="/assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My bookings — SmartParking</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2315a34a'/%3E%3Ctext x='32' y='45' font-family='Segoe UI,Arial' font-size='36' font-weight='bold' fill='white' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body data-page="booking">
+
+<header class="site-header">
+    <div class="container header-inner">
+        <a class="brand" href="/">
+            <span class="brand-mark">P</span>
+            <span class="brand-text">Smart<span>Parking</span></span>
+        </a>
+        <nav class="nav" id="site-nav">
+            <a href="/" data-nav="home">Home</a>
+            <a href="/find.html" data-nav="find">Find Parking</a>
+            <a href="/about.html" data-nav="about">About</a>
+            <a href="/dashboard.html" data-nav="dashboard">Dashboard</a>
+        </nav>
+        <div class="header-actions">
+            <div class="row" data-auth-area></div>
+            <button class="btn btn-secondary btn-sm menu-toggle" id="menu-toggle" type="button">Menu</button>
+        </div>
+    </div>
+</header>
+
+<section class="page-hero">
+    <div class="container">
+        <div class="crumbs"><a href="/">Home</a> / My bookings</div>
+        <h1>Your parking bookings</h1>
+        <p>Each booking holds a slot in the C++ slot linked list. Cancelling frees the slot immediately and promotes the first person on the waiting list.</p>
+    </div>
+</section>
+
+<main class="container" style="padding:30px 0 70px">
+    <div id="confirmation"></div>
+
+    <div class="panel" style="margin-top:24px">
+        <div class="panel-pad">
+            <div class="row-between">
+                <div>
+                    <h2 style="font-size:19px">Active bookings</h2>
+                    <p class="small muted" id="bookings-subtitle">Loading…</p>
+                </div>
+                <button class="btn btn-secondary btn-sm" type="button" id="refresh-bookings">Refresh</button>
+            </div>
+            <div class="table-wrap mt-3" id="bookings-wrap">
+                <div class="skeleton" style="height:70px"></div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div>
+                <a class="brand" href="/"><span class="brand-mark">P</span><span class="brand-text">Smart<span>Parking</span></span></a>
+                <p>A smart parking management system built as a Data Structures &amp; Algorithms project.</p>
+            </div>
+            <div>
+                <h4>Product</h4>
+                <a href="/find.html">Find parking</a><br>
+                <a href="/dashboard.html">Dashboard</a><br>
+                <a href="/booking.html">My bookings</a>
+            </div>
+            <div>
+                <h4>Project</h4>
+                <a href="/about.html">How it works</a><br>
+                <a href="/about.html#dsa">DSA concepts</a><br>
+                <a href="/about.html#run">Run locally</a>
+            </div>
+            <div>
+                <h4>Built with</h4>
+                <p style="max-width:22ch">C++17 · SQLite · HTML5 · CSS3 · vanilla JavaScript</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© <span data-year></span> SmartParking — academic DSA project</span>
+            <span>Bookings persist in SQLite across restarts</span>
+        </div>
+    </div>
+</footer>
+
+<script src="/assets/app.js"></script>
+<script src="/assets/booking.js"></script>
+</body>
+</html>

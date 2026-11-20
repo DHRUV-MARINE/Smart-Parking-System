@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard — SmartParking</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2315a34a'/%3E%3Ctext x='32' y='45' font-family='Segoe UI,Arial' font-size='36' font-weight='bold' fill='white' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body data-page="dashboard">
+
+<header class="site-header">
+    <div class="container header-inner">
+        <a class="brand" href="/">
+            <span class="brand-mark">P</span>
+            <span class="brand-text">Smart<span>Parking</span></span>
+        </a>
+        <nav class="nav" id="site-nav">
+            <a href="/" data-nav="home">Home</a>
+            <a href="/find.html" data-nav="find">Find Parking</a>
+            <a href="/about.html" data-nav="about">About</a>
+            <a href="/dashboard.html" data-nav="dashboard">Dashboard</a>
+        </nav>
+        <div class="header-actions">
+            <div class="row" data-auth-area></div>
+            <button class="btn btn-secondary btn-sm menu-toggle" id="menu-toggle" type="button">Menu</button>
+        </div>
+    </div>
+</header>
+
+<section class="page-hero">
+    <div class="container">
+        <div class="crumbs"><a href="/">Home</a> / Dashboard</div>
+        <h1>Parking statistics</h1>
+        <p>Live aggregates computed in C++ from the slot linked lists, booking records and the road graph.</p>
+    </div>
+</section>
+
+<main class="container" style="padding:28px 0 70px">
+    <div class="row-between mb-2">
+        <span class="small muted" id="updated-at">Loading…</span>
+        <button class="btn btn-secondary btn-sm" type="button" id="refresh-stats">Refresh</button>
+    </div>
+
+    <div class="kpi-grid" id="kpi-grid">
+        <div class="kpi skeleton" style="height:118px"></div>
+        <div class="kpi skeleton" style="height:118px"></div>
+        <div class="kpi skeleton" style="height:118px"></div>
+        <div class="kpi skeleton" style="height:118px"></div>
+    </div>
+
+    <div class="grid-2 mt-4" style="align-items:start">
+        <div class="panel panel-pad">
+            <div class="panel-title"><span>Busiest parking lots</span><span class="small muted">occupancy %</span></div>
+            <div class="bar-list" id="busiest-list">
+                <div class="skeleton" style="height:26px"></div>
+                <div class="skeleton" style="height:26px"></div>
+            </div>
+        </div>
+        <div class="panel panel-pad">
+            <div class="panel-title"><span>Network &amp; algorithms</span></div>
+            <div class="detail-facts" style="grid-template-columns:1fr 1fr;margin-top:0">
+                <div class="fact"><span>Road graph nodes</span><strong id="graph-nodes">—</strong></div>
+                <div class="fact"><span>Road graph edges</span><strong id="graph-edges">—</strong></div>
+                <div class="fact"><span>Waitlisted drivers</span><strong id="waiting-total">—</strong></div>
+                <div class="fact"><span>Revenue booked</span><strong id="revenue">—</strong></div>
+            </div>
+            <p class="hint mt-3">Distances: Dijkstra with a binary min-heap. Sorting: merge sort / quick sort. Lookup: hash table. Waiting list: FIFO queue.</p>
+        </div>
+    </div>
+
+    <div class="panel mt-4">
+        <div class="panel-pad">
+            <div class="panel-title"><span>All parking locations</span><span class="small muted">live availability</span></div>
+            <div class="table-wrap">
+                <table class="table" id="lots-table">
+                    <thead>
+                        <tr><th>Parking</th><th>Type</th><th>Free</th><th>Occupied</th><th>Total</th><th>Occupancy</th><th>Status</th><th>Waiting</th><th>Per hour</th></tr>
+                    </thead>
+                    <tbody><tr><td colspan="9" class="muted">Loading…</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel mt-4">
+        <div class="panel-pad">
+            <div class="panel-title"><span>Active bookings</span><span class="small muted" id="active-count">0</span></div>
+            <div class="table-wrap" id="bookings-table-wrap">
+                <div class="skeleton" style="height:60px"></div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div>
+                <a class="brand" href="/"><span class="brand-mark">P</span><span class="brand-text">Smart<span>Parking</span></span></a>
+                <p>A smart parking management system built as a Data Structures &amp; Algorithms project.</p>
+            </div>
+            <div>
+                <h4>Product</h4>
+                <a href="/find.html">Find parking</a><br>
+                <a href="/dashboard.html">Dashboard</a><br>
+                <a href="/booking.html">My bookings</a>
+            </div>
+            <div>
+                <h4>Project</h4>
+                <a href="/about.html">How it works</a><br>
+                <a href="/about.html#dsa">DSA concepts</a><br>
+                <a href="/about.html#run">Run locally</a>
+            </div>
+            <div>
+                <h4>Built with</h4>
+                <p style="max-width:22ch">C++17 · SQLite · HTML5 · CSS3 · vanilla JavaScript</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© <span data-year></span> SmartParking — academic DSA project</span>
+            <span>Every number on this page comes from the C++ backend</span>
+        </div>
+    </div>
+</footer>
+
+<script src="/assets/app.js"></script>
+<script src="/assets/dashboard.js"></script>
+</body>
+</html>

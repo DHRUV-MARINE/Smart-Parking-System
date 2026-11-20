@@ -1,0 +1,16 @@
+# build output
+smartparking
+smartparking.exe
+*.o
+*.obj
+*.exe
+
+# SQLite runtime files
+database/*.db
+database/*.db-wal
+database/*.db-shm
+
+# editor / OS
+.vscode/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Find parking — SmartParking</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2315a34a'/%3E%3Ctext x='32' y='45' font-family='Segoe UI,Arial' font-size='36' font-weight='bold' fill='white' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body data-page="find">
+
+<header class="site-header">
+    <div class="container header-inner">
+        <a class="brand" href="/">
+            <span class="brand-mark">P</span>
+            <span class="brand-text">Smart<span>Parking</span></span>
+        </a>
+        <nav class="nav" id="site-nav">
+            <a href="/" data-nav="home">Home</a>
+            <a href="/find.html" data-nav="find">Find Parking</a>
+            <a href="/about.html" data-nav="about">About</a>
+            <a href="/dashboard.html" data-nav="dashboard">Dashboard</a>
+        </nav>
+        <div class="header-actions">
+            <div class="row" data-auth-area></div>
+            <button class="btn btn-secondary btn-sm menu-toggle" id="menu-toggle" type="button">Menu</button>
+        </div>
+    </div>
+</header>
+
+<section class="page-hero">
+    <div class="container">
+        <div class="crumbs"><a href="/">Home</a> / Find parking</div>
+        <h1>Find parking near you</h1>
+        <p>Enter an area, use your location, then filter by price, distance and free slots. Distances are shortest road paths computed by Dijkstra in the C++ backend.</p>
+    </div>
+</section>
+
+<main class="container">
+    <form class="toolbar mt-4" id="search-form">
+        <div class="field grow">
+            <label for="place-input">Your starting point</label>
+            <input class="input" id="place-input" list="place-suggestions" placeholder="e.g. Mall Road" autocomplete="off">
+            <datalist id="place-suggestions"></datalist>
+        </div>
+        <button class="btn btn-secondary" type="button" id="geo-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path><circle cx="12" cy="12" r="8"></circle></svg>
+            Use my location
+        </button>
+        <div class="field">
+            <label for="query-input">Search by name or area</label>
+            <input class="input" id="query-input" placeholder="e.g. The Ridge">
+        </div>
+        <div class="field">
+            <label for="sort-select">Sort by</label>
+            <select class="select" id="sort-select">
+                <option value="distance">Nearest first</option>
+                <option value="price">Cheapest first</option>
+                <option value="availability">Most free slots</option>
+                <option value="name">Name (A–Z)</option>
+            </select>
+        </div>
+        <button class="btn btn-primary" type="submit">Search</button>
+    </form>
+
+    <div class="find-layout">
+        <aside class="sidebar">
+            <div class="filter-panel">
+                <h3>Filters</h3>
+                <div class="filter-group">
+                    <div class="row-between">
+                        <span class="label" style="margin:0">Max price</span>
+                        <span class="range-value" id="price-value">Any price</span>
+                    </div>
+                    <input type="range" id="max-price" min="15" max="60" step="5" value="60">
+                </div>
+                <div class="filter-group">
+                    <div class="row-between">
+                        <span class="label" style="margin:0">Max distance</span>
+                        <span class="range-value" id="distance-value">Any distance</span>
+                    </div>
+                    <input type="range" id="max-distance" min="0.5" max="20" step="0.5" value="20">
+                </div>
+                <div class="filter-group">
+                    <div class="row-between">
+                        <span class="label" style="margin:0">Free slots</span>
+                        <span class="range-value" id="available-value">Any</span>
+                    </div>
+                    <input type="range" id="min-available" min="0" max="20" step="1" value="0">
+                </div>
+                <div class="filter-group">
+                    <span class="label">Parking type</span>
+                    <div class="segmented" id="type-filter">
+                        <button type="button" class="active" data-type="">All</button>
+                        <button type="button" data-type="Public">Public</button>
+                        <button type="button" data-type="Private">Private</button>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <button class="btn btn-secondary btn-sm btn-block" type="button" id="reset-filters">Reset filters</button>
+                </div>
+                <p class="hint">Filters and sorting run in C++. The list you see is already ordered by the backend.</p>
+            </div>
+        </aside>
+
+        <section>
+            <div class="map-panel">
+                <div id="find-map"><div class="skeleton" style="height:380px"></div></div>
+            </div>
+            <div class="map-note" id="map-note">Simulated map · distances measured along the road graph</div>
+
+            <div class="results-head mt-4">
+                <h2>Parking locations</h2>
+                <span class="muted" id="results-meta">Loading…</span>
+            </div>
+            <div class="results-list" id="results-list">
+                <div class="skeleton" style="height:132px"></div>
+                <div class="skeleton" style="height:132px"></div>
+                <div class="skeleton" style="height:132px"></div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div>
+                <a class="brand" href="/"><span class="brand-mark">P</span><span class="brand-text">Smart<span>Parking</span></span></a>
+                <p>A smart parking management system built as a Data Structures &amp; Algorithms project.</p>
+            </div>
+            <div>
+                <h4>Product</h4>
+                <a href="/find.html">Find parking</a><br>
+                <a href="/dashboard.html">Dashboard</a><br>
+                <a href="/booking.html">My bookings</a>
+            </div>
+            <div>
+                <h4>Project</h4>
+                <a href="/about.html">How it works</a><br>
+                <a href="/about.html#dsa">DSA concepts</a><br>
+                <a href="/about.html#run">Run locally</a>
+            </div>
+            <div>
+                <h4>Built with</h4>
+                <p style="max-width:22ch">C++17 · SQLite · HTML5 · CSS3 · vanilla JavaScript</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© <span data-year></span> SmartParking — academic DSA project</span>
+            <span>Distances: Dijkstra · Sorting: merge &amp; quick sort · Search: binary search</span>
+        </div>
+    </div>
+</footer>
+
+<script src="/assets/app.js"></script>
+<script src="/assets/find.js"></script>
+</body>
+</html>
